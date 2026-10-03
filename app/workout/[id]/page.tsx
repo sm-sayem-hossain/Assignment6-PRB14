@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CalendarPlus, Bookmark } from "lucide-react";
+import ActionButtons from "@/app/components/ActionButtons";
 
 export default async function WorkoutDetails({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -90,20 +91,7 @@ export default async function WorkoutDetails({ params }: { params: Promise<{ id:
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                        <button
-                            type="button"
-                            className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#ccff00] text-black font-black text-xs sm:text-sm uppercase tracking-wider hover:bg-[#b8e600] transition-colors"
-                        >
-                            <CalendarPlus className="w-4 h-4" />
-                            Add to today&apos;s plan
-                        </button>
-                        <button
-                            type="button"
-                            className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-gray-800 bg-[#12141a] text-white font-semibold text-xs sm:text-sm uppercase tracking-wider hover:border-gray-600 transition-colors"
-                        >
-                            <Bookmark className="w-4 h-4" />
-                            Save for later
-                        </button>
+                        <ActionButtons workout={workout} />
                     </div>
                 </div>
             </div>

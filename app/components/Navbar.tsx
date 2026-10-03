@@ -3,9 +3,26 @@
 import Link from "next/link";
 import Image from "next/image"
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
     const pathname = usePathname();
+    const [planCount, setPlanCount] = useState(0);
+    const [savedCount, setSavedCount] = useState(0);
+    useEffect(() =>
+        {
+        const updateCounts = () =>
+        {
+            const plan = JSON.parse(localStorage.getItem("fitlog_plan") || "[]");
+            const saved = JSON.parse(localStorage.getItem("fitlog_saved") || "[]");
+            setPlanCount(plan.length);
+            setSavedCount(saved.length);
+        };
+        updateCounts();
+        window.addEventListener("storage", updateCounts);
+        return () => window.removeEventListener("storage", updateCounts);
+    }, []);
+
 
     return (
         <nav className="sticky top-0 z-50 bg-[#0b0c10]/95 backdrop-blur border-b border-gray-800">
@@ -67,11 +84,11 @@ export default function Navbar() {
                 <div className="navbar-end gap-3">
                     <Link href="/my-plan" className="flex items-center gap-2 text-sm text-white">
                         <span>Plan</span>
-                        <span className="w-5 h-5 rounded-full bg-[#ccff00] text-black text-xs font-bold flex items-center justify-center">0</span>
+                        <span className="w-5 h-5 rounded-full bg-[#ccff00] text-black text-xs font-bold flex items-center justify-center">{planCount}</span>
                     </Link>
                     <Link href="/my-plan" className="flex items-center gap-2 text-sm text-gray-300">
                         <span>Saved</span>
-                        <span className="w-5 h-5 rounded-full border border-gray-700 text-gray-300 text-xs flex items-center justify-center">0</span>
+                        <span className="w-5 h-5 rounded-full border border-gray-700 text-gray-300 text-xs flex items-center justify-center">{savedCount}</span>
                     </Link>
                 </div>
 

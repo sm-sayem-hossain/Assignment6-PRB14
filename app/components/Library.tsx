@@ -15,6 +15,7 @@ export default function Library() {
             .then((data) => {
                 setWorkouts(data);
                 setLoading(false);
+                console.log("Full API Response:", data);
             })
             .catch((err) => {
                 console.error("Failed to fetch Workouts:", err);
@@ -30,19 +31,17 @@ export default function Library() {
                     <p className="text-gray-400 text-sm mt-1">Twelve lifts covering every major muscle group.</p>
                 </div>
             </div>
-            <p className="text-white text-center py-10">
-                {loading ? (
-                    <div className="flex justify-center py-20">
-                        <span className="loading loading-bars loading-lg text-[#ccff00]"></span>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {workouts.map((workout) => (
-                            <WorkoutCard key={workout.id} workout={workout} />
-                        ))}
-                    </div>
-                )}
-            </p>
+            {loading ? (
+                <div className="flex justify-center py-20">
+                    <span className="loading loading-bars loading-lg text-[#ccff00]"></span>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+                    {workouts.map((workout) => (
+                        <WorkoutCard key={workout.id} workout={workout} />
+                    ))}
+                </div>
+            )}
         </section>
     );
 }

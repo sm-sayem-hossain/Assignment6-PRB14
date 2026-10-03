@@ -7,39 +7,74 @@ import {
 export interface WorkoutType {
     id: string | number;
     name: string;
-    category: string[];
+    muscleGroups?: string[];
+    category?: string[];
     equipment: string;
     duration: string | number;
-    calories: string | number;
+    caloriesBurned?: string | number;
+    calories?: string | number;
     rating: number;
     image: string;
 }
 
-
 export default function WorkoutCard({ workout }: { workout: WorkoutType }) {
+    const rawCategories = Array.isArray(workout.muscleGroups) 
+        ? workout.muscleGroups 
+        : Array.isArray(workout.category) 
+            ? workout.category 
+            : typeof workout.category === 'string' 
+                ? [workout.category] 
+                : [];
+
     return (
         <Link
             href={`/workout/${workout.id}`}
-            className="bg-[#12141a] border border-gray-800 rounded-2xl overflow-hidden hover:border-gray-600 transition-all group flex flex-col">
-            <div className="card bg-base-100 w-96 shadow-sm">
-                <figure>
-                    <img
-                        src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-                        alt="Shoes" />
-                </figure>
-                <div className="card-body">
-                    <h2 className="card-title">
-                        Card Title
-                        <div className="badge badge-secondary">NEW</div>
-                    </h2>
-                    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-                    <div className="card-actions justify-end">
-                        <div className="badge badge-outline">Fashion</div>
-                        <div className="badge badge-outline">Products</div>
+            className="bg-[#12141a] border border-gray-800/80 rounded-2xl overflow-hidden hover:border-gray-600 transition-all group flex flex-col"
+        >
+            <figure className="relative h-52 w-full bg-[#181a20] overflow-hidden">
+                <img
+                    src={workout.image}
+                    alt={workout.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+            </figure>
+            
+            <div className="p-5 flex flex-col flex-1 justify-between gap-4">
+                <div className="space-y-2">
+                    {rawCategories.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                            {rawCategories.map((cat, idx) => (
+                                <span key={idx} className="bg-[#ccff00] text-black text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full">
+                                    {cat}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                    
+                    <h3 className="text-lg font-black text-white uppercase tracking-tight">
+                        {workout.name}
+                    </h3>
+                    
+                    <p className="text-xs text-gray-400">
+                        {workout.equipment}
+                    </p>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs text-gray-400 font-medium">
+                    <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-gray-400" />
+                        <span>{typeof workout.duration === 'number' ? `${workout.duration} min` : workout.duration}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <Flame className="w-3.5 h-3.5 text-gray-400" />
+                        <span>{workout.caloriesBurned ? `${workout.caloriesBurned} kcal` : workout.calories}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <Star className="w-3.5 h-3.5 text-gray-400" />
+                        <span>{workout.rating}</span>
                     </div>
                 </div>
             </div>
         </Link>
-
     );
 }

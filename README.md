@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FitLog
 
-## Getting Started
+FitLog is a simple workout tracking web application. It helps users discover exercises, check instructions, and organize their daily gym plans.
 
-First, run the development server:
+## Live Links
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* Live Website: https://assignment6-prb-14.vercel.app
+* GitHub Repository: https://github.com/sm-sayem-hossain/Assignment6-PRB14.git
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* Next.js (App Router)
+* TypeScript
+* Tailwind CSS
+* DaisyUI
+* Lucide React
+* React Hot Toast
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Key Features
 
-## Learn More
+1. Workout Library
+Users can browse different workouts fetched from an external API. Each card shows the exercise name, category tags, equipment needed, duration, burned calories, and rating.
 
-To learn more about Next.js, take a look at the following resources:
+2. Dynamic Workout Details
+Clicking any workout card opens a dedicated page. It shows an exercise image, full details, key equipment specs, and step by step instructions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Plan and Save for Later
+Users can add workouts to Today's Plan or save them for later. Duplicate items cannot be added twice, and every action shows an instant notification.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. Live Navbar Counters
+The navigation bar shows real time badges for planned and saved workouts. The numbers update immediately when an item is added or removed.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. Interactive Dashboard and Sorting
+The My Plan page summarizes total exercises, total minutes, and estimated calories. Users can filter by tabs, sort workouts by duration, calories, or rating, mark exercises as done, and remove items easily.

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Trash2, CheckCircle2, ArrowRight, Flame, Clock, Dumbbell } from "lucide-react";
+import { Trash2, CheckCircle2, Clock, Flame, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
 import { WorkoutType } from "../components/Workout";
 
@@ -9,8 +9,8 @@ export default function MyPlanPage()
 {
     const [planList, setPlanList] = useState<WorkoutType[]>([]);
     const [savedList, setSavedList] = useState<WorkoutType[]>([]);
-    const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
-    const [sortBy, setSortBy] = useState<string>("default");
+    const [activeTab, setActiveTab] = useState<"plan" | "saved">("saved");
+    const [sortBy, setSortBy] = useState<string>("Duration");
     const [completedIds, setCompletedIds] = useState<(string | number)[]>([]);
 
     const loadData = () => 
@@ -38,7 +38,7 @@ export default function MyPlanPage()
         localStorage.setItem(key, JSON.stringify(updated));
         window.dispatchEvent(new Event("storage"));
         loadData();
-        toast.success("Removed successfully!");
+        toast.success("Removed from list");
     };
 
     const toggleComplete = (id: string | number, e: React.MouseEvent) => 
@@ -47,10 +47,12 @@ export default function MyPlanPage()
         if (completedIds.includes(id)) 
         {
             setCompletedIds(completedIds.filter((item) => item !== id));
+            toast("Marked as incomplete");
         } 
         else 
         {
             setCompletedIds([...completedIds, id]);
+            toast.success("Marked as done!");
         }
     };
 
@@ -74,19 +76,19 @@ export default function MyPlanPage()
 
     const sortedList = [...currentList].sort((a: WorkoutType, b: WorkoutType) => 
     {
-        if (sortBy === "duration") 
+        if (sortBy === "Duration") 
         {
             const durA = typeof a.duration === "number" ? a.duration : parseInt(String(a.duration)) || 0;
             const durB = typeof b.duration === "number" ? b.duration : parseInt(String(b.duration)) || 0;
             return durB - durA;
         }
-        if (sortBy === "calories") 
+        if (sortBy === "Calories") 
         {
             const calA = typeof a.caloriesBurned === "number" ? a.caloriesBurned : parseInt(String(a.caloriesBurned || a.calories || 0)) || 0;
             const calB = typeof b.caloriesBurned === "number" ? b.caloriesBurned : parseInt(String(b.caloriesBurned || b.calories || 0)) || 0;
             return calB - calA;
         }
-        if (sortBy === "rating") 
+        if (sortBy === "Rating") 
         {
             return (b.rating ?? 0) - (a.rating ?? 0);
         }
@@ -94,104 +96,91 @@ export default function MyPlanPage()
     });
 
     return (
-        <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+        <main className="max-w-7xl mx-auto px-4 py-8 md:py-12 w-full">
+            {/* Title Section matching Figma */}
             <div className="mb-8">
-                <p className="text-[#ccff00] text-xs font-bold uppercase tracking-widest mb-1">
-                    YOUR WORKOUT DASHBOARD
-                </p>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white uppercase tracking-tight">
                     MY PLAN
                 </h1>
                 <p className="text-gray-400 text-sm md:text-base mt-2">
-                    Cap of five lifts for today. Stay consistent and crush your goals.
+                    Cap of five lifts for today. Finish them, then load more.
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-                <div className="bg-[#12141a] border border-gray-800 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#1a2210] flex items-center justify-center text-[#ccff00]">
-                        <Dumbbell className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">Total Exercises</p>
-                        <p className="text-2xl font-black text-white">{totalExercises}</p>
-                    </div>
+            {/* Metrics Summary Row - Single card with 3 columns matching Figma */}
+            <div className="bg-[#101216] border border-gray-800/80 rounded-2xl p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-800/80 mb-8">
+                <div className="pb-4 sm:pb-0 sm:pr-8">
+                    <p className="text-sm text-gray-400 font-medium mb-1">Exercises</p>
+                    <p className="text-4xl sm:text-5xl font-black text-[#ccff00]">{totalExercises}</p>
                 </div>
-
-                <div className="bg-[#12141a] border border-gray-800 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#1a2210] flex items-center justify-center text-[#ccff00]">
-                        <Clock className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">Total Minutes</p>
-                        <p className="text-2xl font-black text-white">{totalMinutes} min</p>
-                    </div>
+                <div className="py-4 sm:py-0 sm:px-8">
+                    <p className="text-sm text-gray-400 font-medium mb-1">Minutes</p>
+                    <p className="text-4xl sm:text-5xl font-black text-white">{totalMinutes}</p>
                 </div>
-
-                <div className="bg-[#12141a] border border-gray-800 rounded-2xl p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#1a2210] flex items-center justify-center text-[#ccff00]">
-                        <Flame className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">Est. Calories</p>
-                        <p className="text-2xl font-black text-white">{totalCalories} kcal</p>
-                    </div>
+                <div className="pt-4 sm:pt-0 sm:pl-8">
+                    <p className="text-sm text-gray-400 font-medium mb-1">Calories</p>
+                    <p className="text-4xl sm:text-5xl font-black text-white">{totalCalories}</p>
                 </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 border-b border-gray-800 pb-4">
-                <div className="flex items-center gap-2 bg-[#12141a] p-1 rounded-xl border border-gray-800">
+            {/* Controls Bar: Tabs on Left, Sort by on Right matching Figma */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                <div className="inline-flex items-center bg-[#101216] p-1.5 rounded-xl border border-gray-800/80">
                     <button
+                        type="button"
                         onClick={() => setActiveTab("plan")}
-                        className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                        className={`px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                             activeTab === "plan"
-                                ? "bg-[#ccff00] text-black shadow-md"
+                                ? "bg-[#1f242e] text-white shadow"
                                 : "text-gray-400 hover:text-white"
                         }`}
                     >
-                        Today&apos;s Plan ({planList.length})
+                        Today&apos;s Plan
                     </button>
                     <button
+                        type="button"
                         onClick={() => setActiveTab("saved")}
-                        className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                        className={`px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                             activeTab === "saved"
-                                ? "bg-[#ccff00] text-black shadow-md"
+                                ? "bg-[#1f242e] text-white shadow"
                                 : "text-gray-400 hover:text-white"
                         }`}
                     >
-                        Saved for Later ({savedList.length})
+                        Saved
                     </button>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-400 uppercase font-semibold">Sort by:</span>
-                    <select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                        className="bg-[#12141a] border border-gray-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ccff00]"
-                    >
-                        <option value="default">Default</option>
-                        <option value="duration">Duration (High to Low)</option>
-                        <option value="calories">Calories (High to Low)</option>
-                        <option value="rating">Rating (High to Low)</option>
-                    </select>
+                <div className="flex items-center gap-2 self-end sm:self-center">
+                    <span className="text-xs text-gray-400 font-medium">Sort By</span>
+                    <div className="relative">
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="appearance-none bg-[#101216] border border-gray-800/80 rounded-xl pl-4 pr-9 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-gray-600 cursor-pointer"
+                        >
+                            <option value="Duration">Duration</option>
+                            <option value="Calories">Calories</option>
+                            <option value="Rating">Rating</option>
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                 </div>
             </div>
 
+            {/* Empty State matching Figma screenshot (image copy 2.png) */}
             {sortedList.length === 0 ? (
-                <div className="text-center py-16 px-4 bg-[#12141a] border border-gray-800/80 rounded-3xl">
-                    <p className="text-lg font-bold text-white mb-2">
-                        {activeTab === "plan" ? "No workouts in today's plan yet." : "No saved workouts yet."}
-                    </p>
-                    <p className="text-gray-400 text-sm mb-6">
-                        Explore our workouts and add your favorite ones to get started!
+                <div className="border border-dashed border-gray-800/90 rounded-3xl py-20 px-4 text-center">
+                    <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider mb-2">
+                        NOTHING HERE YET
+                    </h2>
+                    <p className="text-gray-400 text-xs sm:text-sm mb-6 max-w-md mx-auto">
+                        Browse the library and add a lift to get today moving.
                     </p>
                     <Link
                         href="/"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#ccff00] text-black font-black text-xs uppercase tracking-wider hover:bg-[#b8e600] transition-colors"
+                        className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#ccff00] text-black font-black text-xs uppercase tracking-wider hover:bg-[#b8e600] transition-colors shadow-lg cursor-pointer"
                     >
-                        Go to Workouts
-                        <ArrowRight className="w-4 h-4" />
+                        Go to workouts
                     </Link>
                 </div>
             ) : (
@@ -201,8 +190,8 @@ export default function MyPlanPage()
                         return (
                             <div
                                 key={item.id}
-                                className={`bg-[#12141a] border ${
-                                    isDone ? "border-[#ccff00]/40 bg-[#141b10]" : "border-gray-800"
+                                className={`bg-[#101216] border ${
+                                    isDone ? "border-[#ccff00]/40 bg-[#141b10]" : "border-gray-800/80"
                                 } rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all`}
                             >
                                 <div className="flex items-center gap-4">
@@ -225,32 +214,32 @@ export default function MyPlanPage()
                                             )}
                                         </div>
                                         <p className="text-xs text-gray-400 mt-1 line-clamp-1">
-                                            {item.description || ""}
+                                            {item.equipment || "Standard Equipment"}
                                         </p>
                                         <div className="flex flex-wrap items-center gap-3 text-xs text-gray-300 mt-2">
-                                            <span className="flex items-center gap-1 text-[#ccff00]">
-                                                <Clock className="w-3.5 h-3.5" />
-                                                {typeof item.duration === "number" ? `${item.duration}m` : (item.duration || "25m")}
+                                            <span className="flex items-center gap-1 text-gray-300">
+                                                <Clock className="w-3.5 h-3.5 text-[#ccff00]" />
+                                                {typeof item.duration === "number" ? `${item.duration} min` : (item.duration || "25 min")}
                                             </span>
                                             <span>•</span>
-                                            <span className="flex items-center gap-1 text-[#ccff00]">
-                                                <Flame className="w-3.5 h-3.5" />
+                                            <span className="flex items-center gap-1 text-gray-300">
+                                                <Flame className="w-3.5 h-3.5 text-[#ccff00]" />
                                                 {item.caloriesBurned ? `${item.caloriesBurned} kcal` : (item.calories || "180 kcal")}
                                             </span>
                                             <span>•</span>
-                                            <span>{item.difficulty || "Intermediate"}</span>
+                                            <span>⭐ {item.rating ?? 4.8}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-2 self-end md:self-center shrink-0">
+                                <div className="flex items-center gap-2.5 self-end md:self-center shrink-0">
                                     <button
                                         type="button"
                                         onClick={(e) => toggleComplete(item.id, e)}
-                                        className={`px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer ${
+                                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer ${
                                             isDone
                                                 ? "bg-[#ccff00] text-black"
-                                                : "border border-gray-700 bg-black/40 text-gray-300 hover:text-white hover:border-gray-500"
+                                                : "border border-gray-700 bg-transparent text-gray-300 hover:text-white hover:border-gray-500"
                                         }`}
                                     >
                                         <CheckCircle2 className="w-4 h-4" />
@@ -259,9 +248,9 @@ export default function MyPlanPage()
 
                                     <Link
                                         href={`/workout/${item.id}`}
-                                        className="px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border border-gray-700 bg-black/40 text-gray-300 hover:text-white hover:border-gray-500 transition-colors"
+                                        className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border border-gray-700 bg-transparent text-gray-300 hover:text-white hover:border-gray-500 transition-colors"
                                     >
-                                        Details
+                                        View Details
                                     </Link>
 
                                     <button

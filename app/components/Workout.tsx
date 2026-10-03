@@ -7,9 +7,11 @@ import {
 export interface WorkoutType {
     id: string | number;
     name: string;
+    description?: string;
+    difficulty?: string;
     muscleGroups?: string[];
     category?: string[];
-    equipment: string;
+    equipment?: string;
     duration: string | number;
     caloriesBurned?: string | number;
     calories?: string | number;

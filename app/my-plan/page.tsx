@@ -11,15 +11,16 @@ export default function MyPlanPage()
     const [savedList, setSavedList] = useState<WorkoutType[]>([]);
     const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
     const [sortBy, setSortBy] = useState<string>("default");
-    const [completedIds, setCompletedIds] = useState<number[]>([]);
+    const [completedIds, setCompletedIds] = useState<(string | number)[]>([]);
 
-    const loadData = () =>
+    const loadData = () => 
     {
         const plan = JSON.parse(localStorage.getItem("fitlog_plan") || "[]");
         const saved = JSON.parse(localStorage.getItem("fitlog_saved") || "[]");
         setPlanList(plan);
         setSavedList(saved);
     };
+
     useEffect(() => 
     {
         loadData();
@@ -27,51 +28,66 @@ export default function MyPlanPage()
         return () => window.removeEventListener("storage", loadData);
     }, []);
 
-    const handleRemove = (id: number, e: React.MouseEvent) =>
+    const handleRemove = (id: string | number, e: React.MouseEvent) => 
     {
         e.preventDefault();
         const key = activeTab === "plan" ? "fitlog_plan" : "fitlog_saved";
         const currentList = activeTab === "plan" ? planList : savedList;
-        const updated = currentList.filter(item => item.id !== id);
+        const updated = currentList.filter((item: WorkoutType) => item.id !== id);
+
         localStorage.setItem(key, JSON.stringify(updated));
         window.dispatchEvent(new Event("storage"));
         loadData();
         toast.success("Removed successfully!");
     };
 
-    const toggleComplete = (id: number, e: React.MouseEvent) => {
+    const toggleComplete = (id: string | number, e: React.MouseEvent) => 
+    {
         e.preventDefault();
-        setCompletedIds(prev =>
-            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-        );
+        if (completedIds.includes(id)) 
+        {
+            setCompletedIds(completedIds.filter((item) => item !== id));
+        } 
+        else 
+        {
+            setCompletedIds([...completedIds, id]);
+        }
     };
 
     const currentList = activeTab === "plan" ? planList : savedList;
 
     const totalExercises = currentList.length;
-    const totalMinutes = currentList.reduce((acc, curr) => {
-        const dur = typeof curr.duration === "number" ? curr.duration : parseInt(String(curr.duration)) || 0;
-        return acc + dur;
-    }, 0);
-    const totalCalories = currentList.reduce((acc, curr) => {
-        const cal = typeof curr.caloriesBurned === "number"
-            ? curr.caloriesBurned
-            : parseInt(String(curr.caloriesBurned || curr.calories || 0)) || 0;
-        return acc + cal;
+
+    const totalMinutes = currentList.reduce((sum: number, item: WorkoutType) => 
+    {
+        const dur = typeof item.duration === "number" ? item.duration : parseInt(String(item.duration)) || 0;
+        return sum + dur;
     }, 0);
 
-    const sortedList = [...currentList].sort((a, b) => {
-        if (sortBy === "duration") {
+    const totalCalories = currentList.reduce((sum: number, item: WorkoutType) => 
+    {
+        const cal = typeof item.caloriesBurned === "number" 
+            ? item.caloriesBurned 
+            : parseInt(String(item.caloriesBurned || item.calories || 0)) || 0;
+        return sum + cal;
+    }, 0);
+
+    const sortedList = [...currentList].sort((a: WorkoutType, b: WorkoutType) => 
+    {
+        if (sortBy === "duration") 
+        {
             const durA = typeof a.duration === "number" ? a.duration : parseInt(String(a.duration)) || 0;
             const durB = typeof b.duration === "number" ? b.duration : parseInt(String(b.duration)) || 0;
             return durB - durA;
         }
-        if (sortBy === "calories") {
+        if (sortBy === "calories") 
+        {
             const calA = typeof a.caloriesBurned === "number" ? a.caloriesBurned : parseInt(String(a.caloriesBurned || a.calories || 0)) || 0;
             const calB = typeof b.caloriesBurned === "number" ? b.caloriesBurned : parseInt(String(b.caloriesBurned || b.calories || 0)) || 0;
             return calB - calA;
         }
-        if (sortBy === "rating") {
+        if (sortBy === "rating") 
+        {
             return (b.rating ?? 0) - (a.rating ?? 0);
         }
         return 0;
@@ -180,7 +196,7 @@ export default function MyPlanPage()
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {sortedList.map((item) => {
+                    {sortedList.map((item: WorkoutType) => {
                         const isDone = completedIds.includes(item.id);
                         return (
                             <div
@@ -209,7 +225,7 @@ export default function MyPlanPage()
                                             )}
                                         </div>
                                         <p className="text-xs text-gray-400 mt-1 line-clamp-1">
-                                            {item.description}
+                                            {item.description || ""}
                                         </p>
                                         <div className="flex flex-wrap items-center gap-3 text-xs text-gray-300 mt-2">
                                             <span className="flex items-center gap-1 text-[#ccff00]">
